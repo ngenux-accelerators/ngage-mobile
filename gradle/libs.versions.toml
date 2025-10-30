@@ -1,0 +1,58 @@
+[versions]
+activityCompose = "1.11.0"
+agp = "8.13.0"
+aws = "2.30.2"
+coil = "3.3.0"
+composeBom = "2025.10.01"
+converterGson = "3.0.0"
+core-composables = "1.47.0"
+coreKtx = "1.17.0"
+desugar_jdk_libs = "2.1.5"
+ivsBroadcast = "1.35.0"
+ivsChatMessaging = "1.1.0"
+kotlin = "2.2.21"
+kotlinxSerializationJson = "1.9.0"
+ksp = "2.2.21-2.0.4"
+lifecycleRuntimeKtx = "2.9.4"
+navigation = "2.9.5"
+okhttp = "5.2.1"
+retrofit-converter = "1.0.0"
+timber = "5.0.1"
+window = "1.5.0"
+
+[libraries]
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-window = { group = "androidx.window", name = "window", version.ref = "window" }
+aws-api = { module = "com.amplifyframework:aws-api", version.ref = "aws" }
+aws-auth-cognito = { module = "com.amplifyframework:aws-auth-cognito", version.ref = "aws" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil" }
+coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+core-composables = { module = "com.composables:core", version.ref = "core-composables" }
+desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
+ivs-broadcast = { module = "com.amazonaws:ivs-broadcast", version.ref = "ivsBroadcast" }
+ivs-chat-messaging = { module = "com.amazonaws:ivs-chat-messaging", version.ref = "ivsChatMessaging" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
+navigation-common = { group = "androidx.navigation", name = "navigation-common", version.ref = "navigation" }
+navigation-runtime = { group = "androidx.navigation", name = "navigation-runtime", version.ref = "navigation" }
+navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigation" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+retrofit-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit-converter" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

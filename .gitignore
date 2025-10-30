@@ -1,0 +1,13 @@
+*.iml
+.DS_Store
+.cxx
+.externalNativeBuild
+.gradle
+*.jks
+/.idea/
+/app/release/
+/build
+/captures
+/local.properties
+local.properties
+/app/src/main/res/raw/amplify_outputs.json
