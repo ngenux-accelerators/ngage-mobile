@@ -238,6 +238,11 @@ object StageHandler {
         StageRendererWrapper.toggleVideoFilled(id = id)
     }
 
+    fun handleMicInactivity(participantId: String) {
+        // TODO: implement inactivity logic (e.g., show warning, auto-mute, log, etc.)
+        Timber.d("Mic inactivity detected for participant: $participantId")
+    }
+
     private fun pollMeetingParticipants() {
         Timber.d("Getting meeting participants")
         _getMeetingParticipantsJob?.cancel()

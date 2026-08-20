@@ -50,15 +50,17 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.amazon.ivs.realtimecollab.R
+import com.amazon.ivs.realtimecollab.core.common.MIC_INACTIVITY_TIMEOUT_MS
 import com.amazon.ivs.realtimecollab.core.handlers.StageHandler
 import com.amazon.ivs.realtimecollab.core.handlers.stage.Participant
 import com.amazon.ivs.realtimecollab.core.handlers.stage.SELF_PARTICIPANT_ID
 import com.amazon.ivs.realtimecollab.ui.theme.BlackSecondary
 import com.amazon.ivs.realtimecollab.ui.theme.BlackTertiary
 import com.amazon.ivs.realtimecollab.ui.theme.InterHint
-import com.amazon.ivs.realtimecollab.ui.theme.OrangeSecondary
+import com.amazon.ivs.realtimecollab.ui.theme.GreenPrimary
 import com.amazon.ivs.realtimecollab.ui.theme.WhitePrimary
 import com.amazonaws.ivs.broadcast.ImagePreviewView
+import kotlinx.coroutines.delay
 import timber.log.Timber
 
 const val PARTICIPANT_ASPECT_RATIO = 1.5f
@@ -76,6 +78,12 @@ fun ParticipantView(
     aspectRatio: Float = PARTICIPANT_ASPECT_RATIO,
 ) {
     val shape = RoundedCornerShape(30.dp)
+
+    LaunchedEffect(key1 = participant.isSpeaking, key2 = participant.isMicOn) {
+        if (!participant.isMicOn || participant.isSpeaking) return@LaunchedEffect
+        delay(MIC_INACTIVITY_TIMEOUT_MS)
+        StageHandler.handleMicInactivity(participant.id)
+    }
 
     BoxWithConstraints(
         modifier = modifier
@@ -130,14 +138,7 @@ fun ParticipantView(
 
         CrossfadeBox(
             modifier = Modifier
-                .size(size = DpSize(width = width, height = height))
-                .thenOptional(participant.isSpeaking) {
-                    border(
-                        width = 4.dp,
-                        color = OrangeSecondary,
-                        shape = shape,
-                    )
-                },
+                .size(size = DpSize(width = width, height = height)),
             isFirstContent = showVideo,
             firstContent = {
                 if (!showVideo) return@CrossfadeBox
@@ -195,13 +196,13 @@ fun ParticipantView(
             modifier = Modifier
                 .align(if (showContent) Alignment.TopEnd else Alignment.CenterEnd)
                 .padding(if (showContent) 20.dp else 8.dp),
-            isVisible = !participant.isMicOn && !participant.isScreenSharing
+            isVisible = !participant.isScreenSharing
         ) {
             Icon(
                 modifier = Modifier.size(24.dp),
-                painter = painterResource(R.drawable.ic_mic_off),
+                painter = painterResource(if (participant.isMicOn) R.drawable.ic_mic_on else R.drawable.ic_mic_off),
                 contentDescription = null,
-                tint = WhitePrimary,
+                tint = if (participant.isSpeaking) GreenPrimary else WhitePrimary,
             )
         }
     }
@@ -223,14 +224,7 @@ fun OtherParticipants(
                 color = BlackSecondary,
                 shape = shape,
             )
-            .clip(shape = shape)
-            .thenOptional(enabled = isSpeaking) {
-                border(
-                    width = 4.dp,
-                    color = OrangeSecondary,
-                    shape = shape,
-                )
-            },
+            .clip(shape = shape),
         contentAlignment = Alignment.Center,
     ) {
         ColumnRow(
