@@ -1,6 +1,8 @@
 package com.amazon.ivs.realtimecollab.core.handlers.networking
 
 import com.amazon.ivs.realtimecollab.core.handlers.stage.Participant
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -33,6 +35,8 @@ data class JoinChatResponse(
 @Serializable
 data class JoinMeetingRequest(
     val meetingId: String?,
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val sessionType: String? = null,
 )
 
 @Serializable
@@ -71,7 +75,8 @@ data class MeetingParticipantAttributes(
 data class JoinMeetingResponse(
     val stageConfigs: StageConfigs,
     val stageArn: String,
-    val meetingId: String
+    val meetingId: String,
+    val sessionType: String = "video",
 )
 
 @Serializable

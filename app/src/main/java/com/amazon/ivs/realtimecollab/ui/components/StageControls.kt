@@ -55,6 +55,7 @@ fun StageControls(
     val isCameraOn by StageHandler.isCameraOn.collectAsStateWithLifecycle()
     val isScreenSharing by StageHandler.isScreenSharing.collectAsStateWithLifecycle()
     val isSettingsOpen by StageHandler.isSettingsOpen.collectAsStateWithLifecycle()
+    val isVoiceOnly by StageHandler.isVoiceOnly.collectAsStateWithLifecycle()
     val isServiceReady by ShareServiceHandler.isReady.collectAsStateWithLifecycle(false)
     val mediaProjectionManager: MediaProjectionManager? = if (LocalInspectionMode.current) null else remember {
         appContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as? MediaProjectionManager
@@ -109,6 +110,7 @@ fun StageControls(
         isCameraOn = isCameraOn,
         isScreenSharing = isScreenSharing,
         isSettingsOpen = isSettingsOpen,
+        isVoiceOnly = isVoiceOnly,
         toggleScreenSharing = {
             Timber.d("Toggle screen sharing: $isScreenSharing")
             if (isScreenSharing) {
@@ -127,6 +129,7 @@ private fun StageControlsContent(
     isCameraOn: Boolean,
     isScreenSharing: Boolean,
     isSettingsOpen: Boolean,
+    isVoiceOnly: Boolean,
     modifier: Modifier = Modifier,
     toggleScreenSharing: () -> Unit
 ) {
@@ -139,6 +142,7 @@ private fun StageControlsContent(
                 isMicOn = isMicOn,
                 isCameraOn = isCameraOn,
                 isScreenSharing = isScreenSharing,
+                isVoiceOnly = isVoiceOnly,
                 toggleScreenSharing = toggleScreenSharing,
             )
             StageType.Viewer -> StageControlsViewer()
@@ -147,6 +151,7 @@ private fun StageControlsContent(
                 isCameraOn = isCameraOn,
                 isScreenSharing = isScreenSharing,
                 isSettingsOpen = isSettingsOpen,
+                isVoiceOnly = isVoiceOnly,
                 toggleScreenSharing = toggleScreenSharing,
             )
         }
@@ -158,6 +163,7 @@ private fun StageControlsRegular(
     isMicOn: Boolean,
     isCameraOn: Boolean,
     isScreenSharing: Boolean,
+    isVoiceOnly: Boolean,
     toggleScreenSharing: () -> Unit,
 ) {
     val micBackground by animateColorAsState(
@@ -186,11 +192,12 @@ private fun StageControlsRegular(
         contentAlignment = Alignment.Center,
     ) {
         val buttonPadding = 10.dp
-        val totalPadding = buttonPadding * 4
+        val otherButtonCount = if (isVoiceOnly) 2 else 4
+        val totalPadding = buttonPadding * otherButtonCount
         val minCloseButtonWidth = 90.dp
         val availableOtherButtonSpace = this.maxWidth - minCloseButtonWidth - totalPadding
-        val otherButtonWidth = (availableOtherButtonSpace / 4).coerceIn(48.dp .. 80.dp)
-        val closeButtonWidth = (this.maxWidth - (otherButtonWidth * 4) - totalPadding)
+        val otherButtonWidth = (availableOtherButtonSpace / otherButtonCount).coerceIn(48.dp .. 80.dp)
+        val closeButtonWidth = (this.maxWidth - (otherButtonWidth * otherButtonCount) - totalPadding)
             .coerceIn(minCloseButtonWidth .. 200.dp)
 
         Row(
@@ -206,26 +213,28 @@ private fun StageControlsRegular(
                 buttonSize = null,
                 onClick = StageHandler::toggleMic,
             )
-            ButtonIcon(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(otherButtonWidth),
-                icon = if (isCameraOn) R.drawable.ic_camera_on else R.drawable.ic_camera_off,
-                background = cameraBackground,
-                tint = cameraIcon,
-                buttonSize = null,
-                onClick = StageHandler::toggleCamera,
-            )
-            ButtonIcon(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(otherButtonWidth),
-                icon = if (isScreenSharing) R.drawable.ic_screenshare_on else R.drawable.ic_screenshare_off,
-                background = screenSharingBackground,
-                tint = screenSharingIcon,
-                buttonSize = null,
-                onClick = toggleScreenSharing,
-            )
+            if (!isVoiceOnly) {
+                ButtonIcon(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(otherButtonWidth),
+                    icon = if (isCameraOn) R.drawable.ic_camera_on else R.drawable.ic_camera_off,
+                    background = cameraBackground,
+                    tint = cameraIcon,
+                    buttonSize = null,
+                    onClick = StageHandler::toggleCamera,
+                )
+                ButtonIcon(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(otherButtonWidth),
+                    icon = if (isScreenSharing) R.drawable.ic_screenshare_on else R.drawable.ic_screenshare_off,
+                    background = screenSharingBackground,
+                    tint = screenSharingIcon,
+                    buttonSize = null,
+                    onClick = toggleScreenSharing,
+                )
+            }
             ButtonIcon(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -276,6 +285,7 @@ private fun StageControlsOnTheGo(
     isCameraOn: Boolean,
     isScreenSharing: Boolean,
     isSettingsOpen: Boolean,
+    isVoiceOnly: Boolean,
     toggleScreenSharing: () -> Unit,
 ) {
     val micBackground by animateColorAsState(
@@ -319,24 +329,26 @@ private fun StageControlsOnTheGo(
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            ButtonIcon(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(80.dp),
-                icon = if (isCameraOn) R.drawable.ic_camera_on else R.drawable.ic_camera_off,
-                background = cameraBackground,
-                tint = cameraIcon,
-                onClick = StageHandler::toggleCamera,
-            )
-            ButtonIcon(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(80.dp),
-                icon = if (isScreenSharing) R.drawable.ic_screenshare_on else R.drawable.ic_screenshare_off,
-                background = screenSharingBackground,
-                tint = screenSharingIcon,
-                onClick = toggleScreenSharing,
-            )
+            if (!isVoiceOnly) {
+                ButtonIcon(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(80.dp),
+                    icon = if (isCameraOn) R.drawable.ic_camera_on else R.drawable.ic_camera_off,
+                    background = cameraBackground,
+                    tint = cameraIcon,
+                    onClick = StageHandler::toggleCamera,
+                )
+                ButtonIcon(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(80.dp),
+                    icon = if (isScreenSharing) R.drawable.ic_screenshare_on else R.drawable.ic_screenshare_off,
+                    background = screenSharingBackground,
+                    tint = screenSharingIcon,
+                    onClick = toggleScreenSharing,
+                )
+            }
             ButtonIcon(
                 modifier = Modifier
                     .weight(1f)
@@ -434,6 +446,7 @@ private fun StageControlsPreview(
                 isCameraOn = isCameraOn,
                 isScreenSharing = isScreenSharing,
                 isSettingsOpen = isSettingsOpen,
+                isVoiceOnly = false,
                 toggleScreenSharing = {},
             )
         }

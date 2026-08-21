@@ -68,6 +68,7 @@ import com.amazon.ivs.realtimecollab.ui.theme.InterHeader
 import com.amazon.ivs.realtimecollab.ui.theme.InterPrimary
 import com.amazon.ivs.realtimecollab.ui.theme.InterSecondary
 import com.amazon.ivs.realtimecollab.ui.theme.OrangePrimary
+import com.amazon.ivs.realtimecollab.ui.theme.WhitePrimary
 
 private val random_background = listOf(
     R.drawable.bg_home_1,
@@ -147,6 +148,7 @@ private fun HomeContent(
         ScreenType.DesktopLandscape -> 335.dp
     }
 
+    var isVoiceOnly by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .fillMaxPortraitWidth(maxWidth = maxWidth)
@@ -166,14 +168,43 @@ private fun HomeContent(
                 text = stringResource(R.string.amazon_ivs_description),
                 style = InterSecondary,
             )
-            ButtonText(
-                modifier = Modifier.padding(top = 40.dp),
-                text = stringResource(R.string.new_stage),
-                background = OrangePrimary,
-                textColor = BlackQuaternary,
-                rippleColor = GraySecondary,
-                onClick = StageHandler::joinMeeting,
-            )
+            Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 40.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
+                        ButtonText(
+                            modifier = Modifier.weight(1f),
+                            fillMaxWidth = false,
+                            text = stringResource(R.string.session_type_video),
+                            background = if (!isVoiceOnly) OrangePrimary else GraySecondary,
+                            textColor = if (!isVoiceOnly) BlackQuaternary else WhitePrimary,
+                            rippleColor = GraySecondary,
+                            onClick = { isVoiceOnly = false },
+                        )
+                        ButtonText(
+                            modifier = Modifier.weight(1f),
+                            fillMaxWidth = false,
+                            text = stringResource(R.string.session_type_voice),
+                            background = if (isVoiceOnly) OrangePrimary else GraySecondary,
+                            textColor = if (isVoiceOnly) BlackQuaternary else WhitePrimary,
+                            rippleColor = GraySecondary,
+                            onClick = { isVoiceOnly = true },
+                        )
+                    }
+                    ButtonText(
+                        text = stringResource(R.string.new_stage),
+                        background = OrangePrimary,
+                        textColor = BlackQuaternary,
+                        rippleColor = GraySecondary,
+                        onClick = { StageHandler.joinMeeting(isVoiceOnly = isVoiceOnly) },
+                    )
+                }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)

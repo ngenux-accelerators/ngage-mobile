@@ -73,6 +73,7 @@ fun ParticipantView(
     setAspectRatio: Boolean = true,
     showBackground: Boolean = true,
     showContent: Boolean = true,
+    isVoiceOnly: Boolean = false,
     textSize: TextUnit = 14.sp,
     avatarSize: Dp = 48.dp,
     aspectRatio: Float = PARTICIPANT_ASPECT_RATIO,
@@ -105,7 +106,7 @@ fun ParticipantView(
         val density = LocalDensity.current
         val width = density.run { constraints.minWidth.toDp() }
         val height = density.run { constraints.minHeight.toDp() }
-        val showVideo = showContent && participant.isCameraOn
+        val showVideo = showContent && participant.isCameraOn && !isVoiceOnly
 
         @Composable
         fun Username(

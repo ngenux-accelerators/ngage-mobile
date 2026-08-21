@@ -1,6 +1,7 @@
 package com.amazon.ivs.realtimecollab.ui.screens
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -10,8 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,10 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -50,6 +56,7 @@ import com.amazon.ivs.realtimecollab.ui.components.isSquare
 import com.amazon.ivs.realtimecollab.ui.components.isSquareOrPortrait
 import com.amazon.ivs.realtimecollab.ui.components.thenOptional
 import com.amazon.ivs.realtimecollab.ui.theme.BlackQuaternary
+import com.amazon.ivs.realtimecollab.ui.theme.BlackSecondary
 import com.amazon.ivs.realtimecollab.ui.theme.BlackTertiary
 import com.amazon.ivs.realtimecollab.ui.theme.GraySecondary
 import com.amazon.ivs.realtimecollab.ui.theme.GrayTertiary
@@ -66,6 +73,7 @@ fun JoinScreen(
     val isMicOn by StageHandler.isMicOn.collectAsStateWithLifecycle()
     val isCameraOn by StageHandler.isCameraOn.collectAsStateWithLifecycle()
     val isSettingsOpen by StageHandler.isSettingsOpen.collectAsStateWithLifecycle()
+    val isVoiceOnly by StageHandler.isVoiceOnly.collectAsStateWithLifecycle()
     val participants by StageHandler.participants.collectAsStateWithLifecycle()
     val participant = participants.getSelfParticipant()
     val stageId = meetingConfig.meetingId
@@ -79,6 +87,7 @@ fun JoinScreen(
             isMicOn = isMicOn,
             isCameraOn = isCameraOn,
             isSettingsOpen = isSettingsOpen,
+            isVoiceOnly = isVoiceOnly,
         )
     }
 }
@@ -90,6 +99,7 @@ private fun JoinScreenContent(
     isMicOn: Boolean,
     isCameraOn: Boolean,
     isSettingsOpen: Boolean,
+    isVoiceOnly: Boolean = false,
 ) {
     ScreenBox(
         contentAlignment = Alignment.Center,
@@ -139,6 +149,7 @@ private fun JoinScreenContent(
                         isMicOn = isMicOn,
                         isCameraOn = isCameraOn,
                         isSettingsOpen = isSettingsOpen,
+                        isVoiceOnly = isVoiceOnly,
                         showPreview = showPreview,
                         onHeightSet = { height ->
                             if (height > participantContainerHeight) {
@@ -154,6 +165,7 @@ private fun JoinScreenContent(
                     isMicOn = isMicOn,
                     isCameraOn = isCameraOn,
                     isSettingsOpen = isSettingsOpen,
+                    isVoiceOnly = isVoiceOnly,
                     showControls = !showPreview,
                     onHeightSet = { height ->
                         buttonContainerHeight = height
@@ -176,6 +188,7 @@ private fun JoinScreenContent(
                         isMicOn = isMicOn,
                         isCameraOn = isCameraOn,
                         isSettingsOpen = isSettingsOpen,
+                        isVoiceOnly = isVoiceOnly,
                     )
                 }
                 Box(
@@ -189,6 +202,7 @@ private fun JoinScreenContent(
                         isMicOn = isMicOn,
                         isCameraOn = isCameraOn,
                         isSettingsOpen = isSettingsOpen,
+                        isVoiceOnly = isVoiceOnly,
                     )
                 }
             }
@@ -213,11 +227,32 @@ private fun JoinScreenContent(
 }
 
 @Composable
+private fun VoiceOnlyPlaceholder(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .aspectRatio(1.5f)
+            .clip(RoundedCornerShape(30.dp))
+            .background(BlackSecondary),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            modifier = Modifier.size(48.dp),
+            painter = painterResource(R.drawable.ic_mic_on),
+            contentDescription = null,
+            tint = WhitePrimary,
+        )
+    }
+}
+
+@Composable
 private fun JoinScreenCameraPreview(
     participant: Participant,
     isMicOn: Boolean,
     isCameraOn: Boolean,
     isSettingsOpen: Boolean,
+    isVoiceOnly: Boolean = false,
     showPreview: Boolean = true,
     onHeightSet: (Dp) -> Unit = {},
 ) {
@@ -229,18 +264,28 @@ private fun JoinScreenCameraPreview(
             onHeightSet(maxHeight)
         },
     ) {
-        ParticipantView(
-            modifier = Modifier.thenOptional(enabled = isPhoneLandscape()) {
-                weight(1f)
-                    .aspectRatio(1.5f)
-            },
-            participant = participant,
-            setAspectRatio = !isPhoneLandscape(),
-        )
+        if (isVoiceOnly) {
+            VoiceOnlyPlaceholder(
+                modifier = Modifier.thenOptional(enabled = isPhoneLandscape()) {
+                    weight(1f)
+                        .aspectRatio(1.5f)
+                },
+            )
+        } else {
+            ParticipantView(
+                modifier = Modifier.thenOptional(enabled = isPhoneLandscape()) {
+                    weight(1f)
+                        .aspectRatio(1.5f)
+                },
+                participant = participant,
+                setAspectRatio = !isPhoneLandscape(),
+            )
+        }
         JoinStageControls(
             isMicOn = isMicOn,
             isCameraOn = isCameraOn,
             isSettingsOpen = isSettingsOpen,
+            isVoiceOnly = isVoiceOnly,
         )
     }
 }
@@ -250,6 +295,7 @@ private fun JoinStageControls(
     isMicOn: Boolean,
     isCameraOn: Boolean,
     isSettingsOpen: Boolean,
+    isVoiceOnly: Boolean = false,
 ) {
     val micBackground by animateColorAsState(
         targetValue = if (isMicOn) GrayTertiary else GraySecondary,
@@ -285,12 +331,14 @@ private fun JoinStageControls(
             tint = micIcon,
             onClick = StageHandler::toggleMic,
         )
-        ButtonIcon(
-            icon = if (isCameraOn) R.drawable.ic_camera_on else R.drawable.ic_camera_off,
-            background = cameraBackground,
-            tint = cameraIcon,
-            onClick = StageHandler::toggleCamera,
-        )
+        if (!isVoiceOnly) {
+            ButtonIcon(
+                icon = if (isCameraOn) R.drawable.ic_camera_on else R.drawable.ic_camera_off,
+                background = cameraBackground,
+                tint = cameraIcon,
+                onClick = StageHandler::toggleCamera,
+            )
+        }
         ButtonIcon(
             icon = R.drawable.ic_settings,
             background = settingsBackground,
@@ -306,6 +354,7 @@ private fun JoinScreenButtons(
     isCameraOn: Boolean,
     isSettingsOpen: Boolean,
     modifier: Modifier = Modifier,
+    isVoiceOnly: Boolean = false,
     showControls: Boolean = false,
     onHeightSet: (Dp) -> Unit = {},
 ) {
@@ -321,6 +370,7 @@ private fun JoinScreenButtons(
                 isMicOn = isMicOn,
                 isCameraOn = isCameraOn,
                 isSettingsOpen = isSettingsOpen,
+                isVoiceOnly = isVoiceOnly,
             )
         }
         ButtonText(
@@ -366,6 +416,7 @@ private fun JoinScreenPreview(
             isMicOn = isMicOn,
             isCameraOn = isCameraOn,
             isSettingsOpen = isSettingsOpen,
+            isVoiceOnly = false,
         )
     }
 }

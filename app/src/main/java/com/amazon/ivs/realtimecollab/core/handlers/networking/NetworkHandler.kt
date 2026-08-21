@@ -31,6 +31,7 @@ data class MeetingConfig(
     val meetingId: String = "",
     val userToken: String = "",
     val displayToken: String = "",
+    val isVoiceOnly: Boolean = false,
 )
 
 object NetworkHandler {
@@ -63,11 +64,12 @@ object NetworkHandler {
         .build()
         .create(Api::class.java)
 
-    suspend fun joinMeeting(meetingId: String?): MeetingConfig? = try {
+    suspend fun joinMeeting(meetingId: String?, isVoiceOnly: Boolean = false): MeetingConfig? = try {
         val meetingResponse = makeRetriableRequest {
             api.joinMeeting(
                 body = JoinMeetingRequest(
                     meetingId = meetingId,
+                    sessionType = if (meetingId == null) (if (isVoiceOnly) "voice" else "video") else null,
                 )
             )
         }
@@ -86,6 +88,7 @@ object NetworkHandler {
             meetingId = meetingResponse.meetingId,
             userToken = meetingResponse.stageConfigs.user.token,
             displayToken = meetingResponse.stageConfigs.display.token,
+            isVoiceOnly = meetingResponse.sessionType == "voice",
         )
     } catch (e: Exception) {
         Timber.w(e, "Failed to join stage")

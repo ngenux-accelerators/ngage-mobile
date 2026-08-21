@@ -39,6 +39,7 @@ object StageHandler {
     private val _isSelfVideoMirrored = MutableStateFlow(true)
     private val _isCameraFlipped = MutableStateFlow(false)
     private val _meetingConfig = MutableStateFlow(MeetingConfig())
+    private val _isVoiceOnly = MutableStateFlow(false)
     private var _getMeetingParticipantsJob: Job? = null
 
     val isMembersOpen = _isMembersOpen.asStateFlow()
@@ -50,6 +51,7 @@ object StageHandler {
     val isIncomingVideoOn = _isIncomingVideoOn.asStateFlow()
     val isSelfVideoMirrored = _isSelfVideoMirrored.asStateFlow()
     val meetingConfig = _meetingConfig.asStateFlow()
+    val isVoiceOnly = _isVoiceOnly.asStateFlow()
 
     val stageType = StageWrapper.stageType
     val participants = StageRendererWrapper.participants
@@ -77,16 +79,18 @@ object StageHandler {
         StageRendererWrapper.setPreviewParticipants(count = count)
     }
 
-    fun joinMeeting(meetingId: String? = null) = launchMain {
-        Timber.d("Joining meeting: $meetingId")
+    fun joinMeeting(meetingId: String? = null, isVoiceOnly: Boolean = false) = launchMain {
+        Timber.d("Joining meeting: $meetingId, $isVoiceOnly")
         NavigationHandler.showLoading(loadingState = LoadingState.Loading)
-        val meeting = NetworkHandler.joinMeeting(meetingId = meetingId)
+        val meeting = NetworkHandler.joinMeeting(meetingId = meetingId, isVoiceOnly = isVoiceOnly)
         Timber.d("Meeting joined: $meeting")
         NavigationHandler.hideLoading()
 
         if (meeting != null) {
             _meetingConfig.update { meeting }
-            StageWrapper.startPreview()
+            val voiceOnly = if (meetingId == null) isVoiceOnly else meeting.isVoiceOnly
+            _isVoiceOnly.update { voiceOnly }
+            StageWrapper.startPreview(isCameraOn = !voiceOnly)
         }
     }
 
@@ -106,7 +110,10 @@ object StageHandler {
             NavigationHandler.goTo(Destination.StageScreen)
             StageWrapper.startPreview(
                 isMicOn = _isMicOn.value,
-                isCameraOn = _isCameraOn.value,
+                isCameraOn = if (_isVoiceOnly.value) false else _isCameraOn.value,
+            )
+            StageWrapper.setSubscribeType(
+                if (_isVoiceOnly.value) SubscribeType.AUDIO_ONLY else SubscribeType.AUDIO_VIDEO
             )
             delay(1000)
             StageRendererWrapper.getMeetingParticipants(
@@ -122,6 +129,7 @@ object StageHandler {
 
         Timber.d("Stage: ${_meetingConfig.value} left")
         _meetingConfig.update { MeetingConfig() }
+        _isVoiceOnly.update { false }
 
         if (resetToHomeScreen) {
             NavigationHandler.reset()

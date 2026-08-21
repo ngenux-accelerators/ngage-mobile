@@ -40,6 +40,8 @@
     <string name="chat">Chat</string>
     <string name="say_something">Say something</string>
     <string name="err_fields_empty">Fields cannot be empty</string>
+    <string name="session_type_video">Video</string>
+    <string name="session_type_voice">Voice only</string>
     <string name="viewers">Viewers</string>
     <string name="no_contributors">There are no contributors in this stage</string>
 </resources>

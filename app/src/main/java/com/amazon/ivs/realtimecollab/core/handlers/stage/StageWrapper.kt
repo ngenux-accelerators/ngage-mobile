@@ -71,6 +71,7 @@ internal object StageWrapper {
     fun leaveStage() {
         Timber.d("Removing stage devices")
         _selfDeviceState = SelfDeviceState()
+        _subscribeType = SubscribeType.AUDIO_VIDEO
         StageRendererWrapper.leave(stage = _stage)
         _stageType.update { StageType.Regular }
         _stage = null
