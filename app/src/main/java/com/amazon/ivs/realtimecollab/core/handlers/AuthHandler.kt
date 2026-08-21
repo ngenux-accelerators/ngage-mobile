@@ -89,8 +89,8 @@ object AuthHandler {
                 { result ->
                     Timber.d("Sign up result: $result")
                     checkSession(
-                        errorDestination = Destination.SignUpScreen,
-                        errorMessage = R.string.err_sign_up,
+                        notifyOnError = false,
+                        errorDestination = Destination.SignInScreen,
                     )
                 },
                 { error ->

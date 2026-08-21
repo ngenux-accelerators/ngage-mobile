@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -60,6 +61,7 @@ import com.amazon.ivs.realtimecollab.ui.theme.BlackSecondary
 import com.amazon.ivs.realtimecollab.ui.theme.BlackTertiary
 import com.amazon.ivs.realtimecollab.ui.theme.GraySecondary
 import com.amazon.ivs.realtimecollab.ui.theme.GrayTertiary
+import com.amazon.ivs.realtimecollab.ui.theme.InterPrimary
 import com.amazon.ivs.realtimecollab.ui.theme.OrangePrimary
 import com.amazon.ivs.realtimecollab.ui.theme.WhitePrimary
 import timber.log.Timber
@@ -228,6 +230,7 @@ private fun JoinScreenContent(
 
 @Composable
 private fun VoiceOnlyPlaceholder(
+    username: String,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -237,11 +240,9 @@ private fun VoiceOnlyPlaceholder(
             .background(BlackSecondary),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(
-            modifier = Modifier.size(48.dp),
-            painter = painterResource(R.drawable.ic_mic_on),
-            contentDescription = null,
-            tint = WhitePrimary,
+        Text(
+            text = username,
+            style = InterPrimary.copy(color = WhitePrimary),
         )
     }
 }
@@ -266,6 +267,7 @@ private fun JoinScreenCameraPreview(
     ) {
         if (isVoiceOnly) {
             VoiceOnlyPlaceholder(
+                username = participant.name,
                 modifier = Modifier.thenOptional(enabled = isPhoneLandscape()) {
                     weight(1f)
                         .aspectRatio(1.5f)
@@ -338,13 +340,13 @@ private fun JoinStageControls(
                 tint = cameraIcon,
                 onClick = StageHandler::toggleCamera,
             )
+            ButtonIcon(
+                icon = R.drawable.ic_settings,
+                background = settingsBackground,
+                tint = settingsIcon,
+                onClick = StageHandler::toggleSettingsOpen,
+            )
         }
-        ButtonIcon(
-            icon = R.drawable.ic_settings,
-            background = settingsBackground,
-            tint = settingsIcon,
-            onClick = StageHandler::toggleSettingsOpen,
-        )
     }
 }
 
@@ -373,18 +375,21 @@ private fun JoinScreenButtons(
                 isVoiceOnly = isVoiceOnly,
             )
         }
+        /*
         ButtonText(
             text = stringResource(R.string.join_as_a_viewer),
             onClick = {
                 StageHandler.joinStage(StageType.Viewer)
             }
         )
+
         ButtonText(
             text = stringResource(R.string.join_on_the_go),
             onClick = {
                 StageHandler.joinStage(StageType.OnTheGo)
             }
         )
+        */
         ButtonText(
             text = stringResource(R.string.join_now),
             background = OrangePrimary,
