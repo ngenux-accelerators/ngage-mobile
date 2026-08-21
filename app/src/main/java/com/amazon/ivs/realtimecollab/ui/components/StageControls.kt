@@ -234,15 +234,15 @@ private fun StageControlsRegular(
                     buttonSize = null,
                     onClick = toggleScreenSharing,
                 )
+                ButtonIcon(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(otherButtonWidth),
+                    icon = R.drawable.ic_settings,
+                    buttonSize = null,
+                    onClick = StageHandler::toggleSettingsOpen,
+                )
             }
-            ButtonIcon(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(otherButtonWidth),
-                icon = R.drawable.ic_settings,
-                buttonSize = null,
-                onClick = StageHandler::toggleSettingsOpen,
-            )
             ButtonIcon(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -348,16 +348,16 @@ private fun StageControlsOnTheGo(
                     tint = screenSharingIcon,
                     onClick = toggleScreenSharing,
                 )
+                ButtonIcon(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(80.dp),
+                    icon = R.drawable.ic_settings,
+                    background = settingsBackground,
+                    tint = settingsIcon,
+                    onClick = StageHandler::toggleSettingsOpen,
+                )
             }
-            ButtonIcon(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(80.dp),
-                icon = R.drawable.ic_settings,
-                background = settingsBackground,
-                tint = settingsIcon,
-                onClick = StageHandler::toggleSettingsOpen,
-            )
         }
         ButtonIcon(
             modifier = Modifier

@@ -59,12 +59,12 @@ private fun StageMenuContent(
             tint = membersIcon,
             onClick = StageHandler::toggleMembersOpen,
         )
-        ButtonIcon(
-            icon = R.drawable.ic_chat,
-            background = chatBackground,
-            tint = chatIcon,
-            onClick = StageHandler::toggleChatOpen,
-        )
+        // ButtonIcon(
+        //     icon = R.drawable.ic_chat,
+        //     background = chatBackground,
+        //     tint = chatIcon,
+        //     onClick = StageHandler::toggleChatOpen,
+        // )
     }
 }
 

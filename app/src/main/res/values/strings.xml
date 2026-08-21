@@ -1,6 +1,6 @@
 <resources>
-    <string name="amazon_ivs_description">Connect and collaborate from anywhere in real-time with Amazon IVS.</string>
-    <string name="amazon_ivs_real_time">Amazon IVS Real-time</string>
+    <string name="amazon_ivs_description">Connect and collaborate from anywhere in real-time.</string>
+    <string name="amazon_ivs_real_time">Ngage</string>
     <string name="app_name">RealTimeCollab</string>
     <string name="confirm_password">Confirm password</string>
     <string name="confirm_password_hint">Confirm your password</string>

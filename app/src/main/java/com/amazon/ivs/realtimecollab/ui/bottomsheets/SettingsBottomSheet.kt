@@ -35,11 +35,13 @@ fun SettingsBottomSheet() {
     val isIncomingVideoOn by StageHandler.isIncomingVideoOn.collectAsStateWithLifecycle()
     val isSelfVideoMirrored by StageHandler.isSelfVideoMirrored.collectAsStateWithLifecycle()
     val stageType by StageHandler.stageType.collectAsStateWithLifecycle()
+    val isVoiceOnly by StageHandler.isVoiceOnly.collectAsStateWithLifecycle()
 
     SettingsBottomSheetContent(
         isIncomingVideoOn = isIncomingVideoOn,
         isSelfVideoMirrored = isSelfVideoMirrored,
         isViewer = stageType == StageType.Viewer,
+        isVoiceOnly = isVoiceOnly,
     )
 }
 
@@ -48,6 +50,7 @@ private fun SettingsBottomSheetContent(
     isIncomingVideoOn: Boolean,
     isSelfVideoMirrored: Boolean,
     isViewer: Boolean,
+    isVoiceOnly: Boolean = false,
 ) {
     Column(
         modifier = Modifier
@@ -62,15 +65,17 @@ private fun SettingsBottomSheetContent(
             text = stringResource(R.string.settings),
             style = InterTitle,
         )
-        ButtonSwitch(
-            modifier = Modifier.padding(bottom = if (isViewer) 30.dp else 0.dp),
-            text = stringResource(R.string.incoming_video_title),
-            description = stringResource(R.string.incoming_video_subtitle),
-            isChecked = !isIncomingVideoOn,
-            onCheckedChange = {
-                StageHandler.toggleIncomingVideo()
-            }
-        )
+       /* if (!isVoiceOnly) {
+            ButtonSwitch(
+                modifier = Modifier.padding(bottom = if (isViewer) 30.dp else 0.dp),
+                text = stringResource(R.string.incoming_video_title),
+                description = stringResource(R.string.incoming_video_subtitle),
+                isChecked = !isIncomingVideoOn,
+                onCheckedChange = {
+                    StageHandler.toggleIncomingVideo()
+                }
+            )
+        }*/
         if (isViewer) return@Column
 
         ButtonSwitch(
